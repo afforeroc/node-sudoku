@@ -1,0 +1,16 @@
+table { 
+  border-collapse: collapse; 
+  font-family: Calibri, sans-serif;
+}
+
+colgroup, tbody { 
+  border: solid medium;
+}
+
+td { 
+  border: solid thin; 
+  height: 4em; 
+  width: 4em; 
+  text-align: center; 
+  padding: 0; 
+}

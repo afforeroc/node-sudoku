@@ -1,0 +1,4 @@
+---
+applications:
+- name: sudoku-nodejs
+  memory: 512M

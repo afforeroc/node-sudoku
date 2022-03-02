@@ -20,12 +20,14 @@ async function initSudoku() {
         for (let i = 0; i < elements.length; i++) {
             let element = elements[i];
             let position = element.className.split(/\s+/).join(',');
+            
             //await timeout(1);
             if (position in defaultSudoku) {
                 element.innerHTML = defaultSudoku[position];
+                element.style.fontWeight = "bold";
             } else {
                 element.setAttribute("contenteditable", "true");
-                element.innerHTML = '-';
+                element.innerHTML = ' ';
             }
         }
     }

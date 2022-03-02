@@ -1,6 +1,12 @@
-table { 
+#main-container {
+  text-align: center;
+}
+
+#table-sudoku { 
   border-collapse: collapse; 
-  font-family: Calibri, sans-serif;
+  font: 10px "Lucida Grande", "Helvetica", "Arial", sans-serif;
+  max-width: 500px;
+  margin: auto;
 }
 
 colgroup, tbody { 

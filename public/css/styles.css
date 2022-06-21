@@ -4,7 +4,7 @@
 
 #table-sudoku { 
   border-collapse: collapse; 
-  font: 10px "Lucida Grande", "Helvetica", "Arial", sans-serif;
+  font: 15px "Lucida Grande", "Helvetica", "Arial", sans-serif;
   max-width: 500px;
   margin: auto;
 }

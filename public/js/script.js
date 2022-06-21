@@ -1,23 +1,21 @@
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function initSudoku() {
-    let defaultSudoku = {
-        "row1 col2": 4, "row1 col3": 2, "row2 col1": 6,
-        "row1 col4": 8, "row1 col5": 7, "row3 col4": 6, "row3 col6": 4,
-        "row2 col8": 9, "row3 col7": 7,
-        "row5 col1": 7, "row5 col3": 4, "row6 col1": 2, "row6 col2": 9, "row6 col3": 3,
-        "row4 col5": 2, "row5 col4": 1, "row5 col5": 9, "row5 col6": 8, "row6 col4": 4, "row6 col6": 5,
-        "row4 col7": 9, "row4 col9": 5, "row5 col7": 3, "row5 col9": 6, "row6 col7": 1, "row6 col9": 7,
-        "row7 col2": 6, "row7 col3": 9, "row9 col1": 4, "row9 col3": 5, 
-        "row7 col6": 1, "row8 col5": 8,
-        "row7 col8": 7, "row8 col7": 4, "row9 col7": 2, "row9 col8": 1
-    };
+    // Generate of complete and random sudoku
+    let sudoku = sudokuGenerator();
+
+    // Convert sudokuArray to sudokuDict
+    let sudokuDict = sudoku2sudokuDict(sudoku);
+    
+    // Generate the positions of numbers that will delete
+    let positions = randPositions(64);
+
+    // Remove positions
+    positions.forEach(position => {
+        delete sudokuDict[position];
+    });
 
     // Write the generated numbers in the squares
-    for (const position of Object.keys(defaultSudoku)) {
-        let number = defaultSudoku[position];
+    for (const position of Object.keys(sudokuDict)) {
+        let number = sudokuDict[position];
         let element = document.getElementsByClassName(position)[0];
         element.innerHTML = number;
         element.style.fontWeight = "bold";
@@ -53,4 +51,135 @@ function isNumberKey(evt) {
         return false;
 
     return true;
+}
+
+function printSudoku(sudoku) {
+    let base = 3;
+    let ijMax = base**2;
+    for (let i = 0; i < ijMax; i++) {
+        let line = '';
+        for (let j = 0; j < ijMax; j++) {
+            line += sudoku[i][j] + ' ';
+            if ((j + 1) % base == 0) {
+                line += '  ';
+            }
+        }
+        console.log(line);
+        if ((i + 1) % base == 0) {
+            console.log();
+        }
+    }
+}
+
+function getRandomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+function randomBagOfNumers() {
+    let base = 3;
+    let totalNumbers = base**2;
+    let randomBag = [];
+    while(randomBag.length < totalNumbers) {
+        let randomNumber = getRandomInteger(1, totalNumbers + 1);
+        if (!(randomBag.includes(randomNumber))){
+            randomBag.push(randomNumber);
+        }
+    }
+    return randomBag;
+}
+
+function putOneNumberInSudoku(sudoku, number) {
+    let copySudoku = JSON.parse(JSON.stringify(sudoku));
+    let randi, randj;
+    let rows = [];
+    let cols = [];
+    let base = 3;
+    let ijMax = base**2;
+    for (let i = 0; i < ijMax; i+=base) {
+        for (let j = 0; j < ijMax; j+=base) {
+            let counterForExit = 0;
+            while (true)  {
+                randi = getRandomInteger(i, i + base);
+                randj = getRandomInteger(j, j + base);
+                if (!rows.includes(randi) 
+                    && !cols.includes(randj) 
+                    && copySudoku[randi][randj]== 0) {
+                    break;
+                }
+                counterForExit++;
+                if (counterForExit >= 25) {
+                    return false;
+                }
+            }
+
+            copySudoku[randi][randj] = number;
+            rows.push(randi);
+            cols.push(randj);
+        }
+    }
+    
+    // Final sudoku
+    return copySudoku;
+}
+
+function genRandSudokuV1() {
+    // Create an empty sudoku 9x9
+    let base = 3;
+    let ijMax = base**2;
+    let sudoku = [];
+    for (let i = 0; i < ijMax; i++) {
+        sudoku[i] = [];
+        for (let j = 0; j < ijMax; j++) {
+            sudoku[i][j] = 0;
+        }
+    } 
+    
+    // Create a random sudoku put one by one
+    let randomBag = randomBagOfNumers();
+    for (let k = 0; k < ijMax; k++) {
+        let number = randomBag[k];
+        sudoku = putOneNumberInSudoku(sudoku, number);
+        if (sudoku == false) {
+            return false;
+        }
+    }
+    return sudoku;
+}
+
+function sudokuGenerator() {
+    let flag = true;
+    let tries = 0;
+    while (flag) {
+        sudoku = genRandSudokuV1();
+        if (sudoku !== false) {
+            break;
+        }
+        tries++;
+    }
+    console.log("tries:", tries);
+    return sudoku;
+}
+
+function sudoku2sudokuDict(sudoku) {
+    let base = 3;
+    let ijMax = base**2;
+    let sudokuDict = {};
+    for (let i = 0; i < ijMax; i++) {
+        for (let j = 0; j < ijMax; j++) {
+            let key = `row${i+1} col${j+1}`;
+            sudokuDict[key] = sudoku[i][j];
+        }
+    }
+    return sudokuDict;
+}
+
+function randPositions(numBoxes) {
+    let positions = new Set(); 
+    while (positions.size <= numBoxes) {
+        let i = getRandomInteger(0, 10);
+        let j = getRandomInteger(0, 10);
+        let ij = `row${i+1} col${j+1}`;
+        positions.add(ij);
+    }
+    return positions;
 }
